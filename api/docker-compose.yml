@@ -1,26 +1,31 @@
-version: '3'
+version: '3.8'
 services:
+
   server:
     image: postgrest/postgrest
     ports:
       - "3000:3000"
     environment:
-      PGRST_DB_URI: postgres://authenticator:mysecretpassword@db:5432/app_db
       PGRST_DB_SCHEMA: api
-      PGRST_DB_ANON_ROLE: web_anon #In production this role should not be the same as the one used for the connection
+      PGRST_DB_ANON_ROLE: web_anon
+      PGRST_DB_URI: postgres://authenticator:${PGRST_DB_AUTH_PASSWORD}@db:5432/gw2index
       PGRST_OPENAPI_SERVER_PROXY_URI: "http://127.0.0.1:3000"
+      PGRST_JWT_SECRET: ${PGRST_JWT_SECRET}
     volumes:
       - ./postgrest.conf:/etc/postgrest.conf
     depends_on:
       - db
+
   db:
     image: postgres
     ports:
       - "5433:5432"
     environment:
-      POSTGRES_DB: app_db
-      POSTGRES_USER: app_user
-      POSTGRES_PASSWORD: password
+      POSTGRES_DB: gw2index
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      PGRST_DB_AUTH_PASSWORD: ${PGRST_DB_AUTH_PASSWORD}
+      PGRST_JWT_SECRET: ${PGRST_JWT_SECRET}
     volumes:
       - ./pgdata:/var/lib/postgresql/data
       - ./db/:/docker-entrypoint-initdb.d/
