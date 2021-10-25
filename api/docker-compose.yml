@@ -6,7 +6,7 @@ services:
     ports:
       - "3000:3000"
     environment:
-      PGRST_DB_SCHEMA: api
+      PGRST_DB_SCHEMA: api, auth
       PGRST_DB_ANON_ROLE: web_anon
       PGRST_DB_URI: postgres://authenticator:${PGRST_DB_AUTH_PASSWORD}@db:5432/gw2index
       PGRST_OPENAPI_SERVER_PROXY_URI: "http://${API_URL_DOMAIN}:3000"
